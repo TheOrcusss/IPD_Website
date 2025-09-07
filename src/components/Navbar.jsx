@@ -1,15 +1,16 @@
 import React, { useState, useEffect, useRef  } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, User, LogOut } from "lucide-react";
+import { Search, User, LogOut, Menu, X } from "lucide-react";
 
 export default function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const authToken = localStorage.getItem("authToken");
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
 
   const handleLogout = () => {
-    localStorage.removeItem("authToken");
+    localStorage.removeItem("authToken");e
     navigate("/"); // redirect to login page
   };
 
@@ -34,7 +35,7 @@ export default function Navbar() {
       {authToken ? (
         <>
           {/* Nav Links */}
-          <nav className="space-x-6">
+          <nav className="hidden md:flex space-x-6">
             <Link
               to="/dashboard"
               className="text-gray-600 hover:text-blue-600 dark:text-text-light dark:hover:text-primary"
@@ -64,7 +65,7 @@ export default function Navbar() {
           {/* Right Section: Search +Profile */}
           <div className="flex items-center space-x-6">
             {/* Search Bar */}
-            <div className="relative">
+            <div className="relative hidden sm:block">
               <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
               <input
                 type="text"
@@ -101,7 +102,51 @@ export default function Navbar() {
                 </div>
               )}
             </div>
+            
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-2 rounded-md hover:bg-gray-200 dark:hover:bg-panel-dark"
+            >
+              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
           </div>
+
+          {/* Mobile Nav Menu */}
+          {mobileMenuOpen && (
+            <div className="absolute top-full left-0 w-full bg-white dark:bg-panel-dark shadow-lg md:hidden z-40">
+              <nav className="flex flex-col space-y-2 p-4">
+                <Link
+                  to="/dashboard"
+                  className="text-gray-700 dark:text-text-light hover:text-blue-600"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Dashboard
+                </Link>
+                <Link
+                  to="/patients"
+                  className="text-gray-700 dark:text-text-light hover:text-blue-600"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Patients
+                </Link>
+                <Link
+                  to="/diagnostics"
+                  className="text-gray-700 dark:text-text-light hover:text-blue-600"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Diagnostics
+                </Link>
+                <Link
+                  to="/history"
+                  className="text-gray-700 dark:text-text-light hover:text-blue-600"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  History
+                </Link>
+              </nav>
+            </div>
+          )}
         </>
       ) : (
         <nav>
