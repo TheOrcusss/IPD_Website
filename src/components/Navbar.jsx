@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef  } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Search, User, LogOut } from "lucide-react";
 
@@ -6,11 +6,23 @@ export default function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const authToken = localStorage.getItem("authToken");
   const navigate = useNavigate();
+  const dropdownRef = useRef(null);
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
     navigate("/"); // redirect to login page
   };
+
+  // Close dropdown if clicked outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <header className="bg-white dark:bg-panel-deep shadow px-6 py-3 flex justify-between items-center min-w-screen">
@@ -62,7 +74,7 @@ export default function Navbar() {
             </div>
 
             {/* Profile Dropdown */}
-            <div className="relative">
+            <div className="relative" ref={dropdownRef}>
               <Link
                 onClick={() => setDropdownOpen(!dropdownOpen)}
                 className="w-10 h-10 flex items-center justify-center rounded-full bg-blue-600 !text-white font-bold shadow !hover:bg-blue-700 transition"
@@ -71,7 +83,7 @@ export default function Navbar() {
               </Link>
 
               {dropdownOpen && (
-                <div className="absolute mt-2 w-48 !bg-white dark:bg-panel-dark border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg overflow-hidden">
+                <div className="absolute right-0 mt-2 w-48 !bg-white dark:bg-panel-dark border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg overflow-hidden">
                   <Link
                     to="/profile"
                     className="flex items-center gap-2 px-4 py-2 !text-gray-700 border border-transparent hover:border-blue-500 rounded-lg transition-colors"
