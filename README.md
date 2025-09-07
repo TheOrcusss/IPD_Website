@@ -1,12 +1,24 @@
-# React + Vite
+# 🏥 DiagnoMed AI - Patient Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A medical dashboard for doctors to manage patients, view statistics, analyze diagnoses, and add new patient entries with AI-powered features such as symptom analysis, image diagnostics, and OCR.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Features
 
-## Expanding the ESLint configuration
+- 📊 **Dashboard Overview** – View stats like total patients, pending diagnoses, completed reports, and activity.
+- 📈 **Charts & Analytics** – Visual insights with patient charts and diagnosis distribution.
+- 👥 **Recent Patients** – Quick access to the latest patient entries with a "View All" option.
+- ➕ **New Diagnosis** – Add new patient entries, analyze symptoms, run diagnostics, and process reports with OCR.
+- 🔄 **Routing** – Seamless navigation using React Router.
+- 🎨 **Modern UI** – Built with TailwindCSS and Radix UI for clean, responsive, and accessible design.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## 🛠️ Tech Stack
+
+- **Frontend Framework:** [React.js](https://reactjs.org/)
+- **Routing:** [React Router](https://reactrouter.com/)
+- **State Management & Data Fetching:** [TanStack Query](https://tanstack.com/query/latest)
+- **UI Components:** [TailwindCSS](https://tailwindcss.com/), [Radix UI](https://www.radix-ui.com/), [shadcn/ui](https://ui.shadcn.com/)
+- **Charts:** [Recharts](https://recharts.org/)
