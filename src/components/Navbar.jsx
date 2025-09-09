@@ -9,7 +9,7 @@ export default function Navbar() {
   const dropdownRef = useRef(null);
 
   const handleLogout = () => {
-    localStorage.removeItem("authToken");e
+    localStorage.removeItem("authToken");
     navigate("/"); // redirect to login page
   };
 

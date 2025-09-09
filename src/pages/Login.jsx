@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [form, setForm] = useState({ username: "", password: "" });
+  const [role, setRole] = useState("doctor"); // default role
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -13,12 +14,19 @@ export default function Login() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // ✅ Fake login check
-    if (form.username === "Admin" && form.password === "admin@1234") {
-      localStorage.setItem("authToken", "demo-token");
-      navigate("/dashboard"); // Redirect to Dashboard after login
+    // ✅ Doctor login
+    if (role === "doctor" && form.username === "Admin" && form.password === "Adm$n@1234") {
+      localStorage.setItem("authToken", "doctor-token");
+      localStorage.setItem("role", "doctor");
+      navigate("/dashboard");
+    }
+    // ✅ Patient login
+    else if (role === "patient" && form.username === "Patient" && form.password === "Pat$ent@1234") {
+      localStorage.setItem("authToken", "patient-token");
+      localStorage.setItem("role", "patient");
+      navigate("/patient-home");
     } else {
-      setError("Invalid credentials. Try Demo Login.");
+      setError("Invalid credentials. Please try again.");
     }
   };
 
@@ -33,6 +41,32 @@ export default function Login() {
           <p className="text-gray-600 dark:text-gray-300 mt-2">
             AI-Powered Medical Diagnostics
           </p>
+        </div>
+
+        {/* Role Buttons */}
+        <div className="flex justify-center gap-4 mb-4">
+          <button
+            type="button"
+            onClick={() => setRole("doctor")}
+            className={`px-4 py-2 rounded-lg font-medium ${
+              role === "doctor"
+                ? "!bg-blue-600 text-white"
+                : "!bg-gray-200 text-gray-700 hover:bg-gray-300"
+            }`}
+          >
+            Doctor Login
+          </button>
+          <button
+            type="button"
+            onClick={() => setRole("patient")}
+            className={`px-4 py-2 rounded-lg font-medium ${
+              role === "patient"
+                ? "!bg-blue-600 text-white"
+                : "!bg-gray-200 text-gray-700 hover:bg-gray-300"
+            }`}
+          >
+            Patient Login
+          </button>
         </div>
 
         {/* Login Form */}
@@ -59,22 +93,30 @@ export default function Login() {
             type="submit"
             className="w-full !bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-medium"
           >
-            Login
+            Login as {role === "doctor" ? "Doctor" : "Patient"}
           </button>
         </form>
 
         {error && <p className="text-red-500 text-sm mt-3">{error}</p>}
 
-        {/* Demo Info */}
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
-          Demo Login: <br />
-          Username: <code>Admin</code> <br />
-          Password: <code>admin@1234</code>
-        </p>
+        {/* Demo Info — show based on role */}
+        {role === "doctor" ? (
+          <div className="text-sm text-gray-500 dark:text-gray-400 mt-4 space-y-1">
+            <p><strong>Doctor Demo:</strong></p>
+            <p>Username: <code>Admin</code></p>
+            <p>Password: <code>Adm$n@1234</code></p>
+          </div>
+        ) : (
+          <div className="text-sm text-gray-500 dark:text-gray-400 mt-4 space-y-1">
+            <p><strong>Patient Demo:</strong></p>
+            <p>Username: <code>Patient</code></p>
+            <p>Password: <code>Pat$ent@1234</code></p>
+          </div>
+        )}
 
         {/* Footer */}
         <footer className="mt-6 text-center text-xs text-gray-500 dark:text-gray-400">
-          Secure medical diagnostics for healthcare professionals
+          Secure medical diagnostics for healthcare professionals & patients
         </footer>
       </div>
     </div>
