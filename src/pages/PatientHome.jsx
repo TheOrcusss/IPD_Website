@@ -20,7 +20,7 @@ export default function PatientHome() {
   ];
 
   return (
-    <div className="min-h-screen min-w-screen bg-gradient-to-br from-blue-50 to-gray-100 p-10">
+    <div className="py-12 px-4 md:px-10">
       {/* Welcome User */}
       <div className="mb-10 text-center">
         <h1 className="text-4xl font-bold text-blue-600">Welcome, {userName}!</h1>

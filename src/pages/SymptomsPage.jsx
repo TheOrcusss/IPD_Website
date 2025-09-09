@@ -40,7 +40,7 @@ export default function SymptomsPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
+    <div className="max-w-5xl mx-auto p-6">
       {/* Header */}
       <h1 className="flex items-center gap-3 text-3xl font-bold text-blue-600 mb-6">
         <FileText className="w-7 h-7" />
