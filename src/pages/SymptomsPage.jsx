@@ -82,7 +82,7 @@ export default function SymptomsPage() {
           placeholder="Describe your symptoms in detail, e.g., headache, mild fever, fatigue, or nausea..."
           rows={6}
           required
-          className="w-full p-4 border border-gray-300 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 transition placeholder-gray-400"
+          className="w-full p-4 border border-gray-300 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 transition placeholder-gray-400 text-black"
         />
 
         <button
