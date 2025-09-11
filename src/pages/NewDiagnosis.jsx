@@ -26,7 +26,7 @@ export default function NewDiagnosis() {
             based on comprehensive medical data.
           </p>
           <button
-            onClick={() => navigate("/symptom-analysis")}
+            onClick={() => navigate("/symptoms")}
             className="mt-4 w-full inline-block px-5 py-3 rounded-lg !bg-blue-600 !hover:bg-blue-700 text-white font-medium shadow transition"
           >
             Start Analysis
