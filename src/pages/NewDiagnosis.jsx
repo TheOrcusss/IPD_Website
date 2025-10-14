@@ -74,15 +74,23 @@ export default function NewDiagnosis() {
                     <p className="text-sm text-gray-600 mb-1 flex items-center gap-1">
                       <Image className="w-4 h-4 text-blue-600" /> Uploaded Scan:
                     </p>
-                    <img
-                      src={
-                        c.image_url.startsWith("http")
-                          ? c.image_url
-                          : `${BACKEND_URL}/${c.image_url}`
-                      }
-                      alt="Patient Scan"
-                      className="rounded-xl border border-gray-200 max-h-64 object-contain"
-                    />
+                    {c.image_url && (
+                      <div className="mt-2">
+                        <p className="text-sm text-gray-600 mb-1 flex items-center gap-1">
+                          <Image className="w-4 h-4 text-blue-600" /> Uploaded
+                          Scan:
+                        </p>
+                        <img
+                          src={
+                            c.image_url.startsWith("http")
+                              ? c.image_url
+                              : `${BACKEND_URL}/${c.image_url}`
+                          }
+                          alt="Patient Scan"
+                          className="rounded-xl border border-gray-200 max-h-64 object-contain"
+                        />
+                      </div>
+                    )}
                   </div>
                 )}
 
