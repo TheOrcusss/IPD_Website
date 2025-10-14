@@ -1,25 +1,17 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from dotenv import load_dotenv
 import os, uuid
 
-# ------------------ LOAD ENV FILE ------------------
-load_dotenv()
-print("🔍 DATABASE_URL from .env:", os.getenv("DATABASE_URL"))
-
+# ------------------ APP SETUP ------------------
 app = Flask(__name__, static_folder="static", static_url_path="/static")
 CORS(app)
 
 # ------------------ DATABASE CONFIG ------------------
-uri = os.getenv("DATABASE_URL")
-if uri and uri.startswith("postgres://"):
-    uri = uri.replace("postgres://", "postgresql://", 1)
-
-if not uri:
-    raise RuntimeError("❌ DATABASE_URL not found. Please check your .env file!")
-
-app.config["SQLALCHEMY_DATABASE_URI"] = uri
+# Directly connect to your Render PostgreSQL
+app.config["SQLALCHEMY_DATABASE_URI"] = (
+    "postgresql://ipd_database_user:DocDwPs7OonqP47NEo6tjlyoy9Du5jzX@dpg-d3n4md33fgac73ab8830-a.oregon-postgres.render.com/ipd_database"
+)
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
@@ -33,22 +25,17 @@ class PatientCase(db.Model):
     cnn_output = db.Column(db.Text)
     analysis_output = db.Column(db.Text)
 
-# ------------------ FILE UPLOADS ------------------
-app.config["UPLOAD_FOLDER"] = os.path.join(app.root_path, "static/uploads")
+# ------------------ FILE UPLOAD CONFIG ------------------
+app.config["UPLOAD_FOLDER"] = "static/uploads"
 os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
-# ------------------ STATIC FILE SERVING ------------------
-# ✅ Ensures uploaded images are served even on Render
-@app.route("/static/uploads/<path:filename>")
-def serve_uploaded_file(filename):
-    return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
-
 # ------------------ ROUTES ------------------
+
 @app.route("/")
 def home():
-    return jsonify({"message": "✅ Backend is running!"})
+    return jsonify({"message": "✅ Backend is running and connected to Render PostgreSQL!"})
 
-# 🧍‍♂️ Patient uploads data
+# 🧍‍♂️ PATIENT SUBMITS DATA
 @app.route("/api/patient/submit", methods=["POST"])
 def patient_submit():
     name = request.form.get("name")
@@ -58,39 +45,40 @@ def patient_submit():
     if not file:
         return jsonify({"error": "No file uploaded"}), 400
 
-    # Save file
+    # Save uploaded file locally
     filename = f"{uuid.uuid4()}_{file.filename}"
     filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
     file.save(filepath)
 
-    # ✅ Public URL (relative path)
-    public_url = f"static/uploads/{filename}"
+    # ✅ Always store the full public URL (for both local + Render)
+    base_url = request.host_url.rstrip("/")  # e.g., http://127.0.0.1:5000 or your Render URL
+    public_url = f"{base_url}/static/uploads/{filename}"
 
-    # Dummy model results
+    # Dummy AI results
     cnn_output = "Detected anomaly in left lung."
     analysis_output = "Possible pneumonia (80%), TB (15%), other (5%)."
 
     case = PatientCase(
         patient_name=name,
         symptoms=symptoms,
-        image_url=public_url,
+        image_url=public_url,  # ✅ store the full URL
         cnn_output=cnn_output,
         analysis_output=analysis_output,
     )
     db.session.add(case)
     db.session.commit()
 
-    return jsonify({"message": "Case submitted successfully!"})
+    return jsonify({"message": "Case submitted successfully!"}), 200
 
-# 👨‍⚕️ Doctor views all patient cases
+# 👨‍⚕️ DOCTOR FETCHES CASES
 @app.route("/api/doctor/cases", methods=["GET"])
 def doctor_cases():
     cases = PatientCase.query.all()
-    base_url = request.host_url  # e.g., http://127.0.0.1:5000/
+    base_url = request.host_url.rstrip("/") 
 
     data = []
     for c in cases:
-        image_full_url = f"{base_url}{c.image_url}" if c.image_url else None
+        image_full_url = f"{base_url}/{c.image_url}" if c.image_url else None
         data.append({
             "id": c.id,
             "patient_name": c.patient_name,
