@@ -1,76 +1,105 @@
-import { useNavigate } from "react-router-dom";
-import { Stethoscope, Image, LineChart } from "lucide-react"; // icons
+import React, { useEffect, useState } from "react";
+import { Activity, User, Image, Loader2, FileText } from "lucide-react";
+
+const BACKEND_URL = import.meta.env.VITE_API_URL; // From .env
 
 export default function NewDiagnosis() {
-  const navigate = useNavigate();
+  const [cases, setCases] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchCases = async () => {
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/doctor/cases`);
+        const data = await response.json();
+
+        if (response.ok) {
+          setCases(data);
+        } else {
+          setError("Failed to fetch cases");
+        }
+      } catch (err) {
+        console.error(err);
+        setError("Server error. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCases();
+  }, []);
 
   return (
-    <main className="p-6">
-      {/* Title */}
-      <h2 className="text-2xl font-bold text-gray-900">New Diagnostics</h2>
-      <p className="text-gray-700 mt-2">
-        Start a new patient entry: Symptom Analysis, Image Diagnostics.
-      </p>
+    <div className="max-w-6xl mx-auto p-6">
+      <h1 className="flex items-center gap-3 text-3xl font-bold !text-blue-600 mb-6">
+        <FileText className="w-7 h-7" />
+        Patient Diagnoses
+      </h1>
 
-      {/* Cards Section */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-        {/* Symptom Analysis */}
-        <div className="p-6 bg-white rounded-2xl shadow hover:shadow-lg transition">
-          <Stethoscope className="w-8 h-8 text-blue-600 mb-3" />
-          <h3 className="text-lg font-semibold text-gray-900">
-            Symptom Analysis
-          </h3>
-          <p className="text-gray-600 mt-2 text-sm leading-relaxed">
-            Input patient symptoms and get AI analysis. <br />
-            Our AI analyzes symptoms and provides diagnostic probabilities
-            based on comprehensive medical data.
-          </p>
-          <button
-            onClick={() => navigate("/symptom-analysis")}
-            className="mt-4 w-full inline-block px-5 py-3 rounded-lg !bg-blue-600 !hover:bg-blue-700 text-white font-medium shadow transition"
-          >
-            Start Analysis
-          </button>
+      {loading ? (
+        <div className="flex justify-center items-center py-20">
+          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
         </div>
-
-        {/* Image Diagnostics */}
-        <div className="p-6 bg-white rounded-2xl shadow hover:shadow-lg transition">
-          <Image className="w-8 h-8 text-blue-600 mb-3" />
-          <h3 className="text-lg font-semibold text-gray-900">
-            Image Diagnostics
-          </h3>
-          <p className="text-gray-600 mt-2 text-sm leading-relaxed">
-            Upload X-rays, MRIs or CT scans for AI analysis. <br />
-            Our computer vision models detect patterns and anomalies
-            in medical imaging with high accuracy.
-          </p>
-          <button
-            onClick={() => navigate("/image-diagnostics")}
-            className="mt-4 w-full inline-block px-5 py-3 rounded-lg !bg-blue-600 !hover:bg-blue-700 text-white font-medium shadow transition"
-          >
-            Upload Images
-          </button>
-        </div>
-
-        {/* Diagnostic History*/}
-        <div className="p-6 bg-white rounded-2xl shadow hover:shadow-lg transition">
-            <LineChart className="w-8 h-8 text-blue-600 mb-3" />
-            <h3 className="text-lg font-semibold text-gray-900">
-                Diagnostic History
-            </h3>
-            <p className="text-gray-600 mt-2 text-sm leading-relaxed">
-                Review previous diagnoses and patient records. <br />
-                Track progress over time, identify trends, and evaluate
-                treatment outcomes with data-driven insights.
-            </p>
-            <button
-                onClick={() => navigate("/diagnostic-history")}
-                className="mt-4 w-full inline-block px-5 py-3 rounded-lg !bg-blue-600 !hover:bg-blue-700 text-white font-medium shadow transition"
+      ) : error ? (
+        <p className="text-center text-red-600 mt-10">{error}</p>
+      ) : cases.length === 0 ? (
+        <p className="text-center text-gray-600 mt-10">
+          No patient submissions available yet.
+        </p>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {cases.map((c) => (
+            <div
+              key={c.id}
+              className="bg-white shadow-md rounded-2xl p-5 hover:shadow-lg transition"
             >
-                View History
-            </button>
+              <div className="flex items-center gap-2 mb-2">
+                <User className="w-5 h-5 text-blue-600" />
+                <h2 className="font-semibold text-lg text-gray-800">
+                  {c.patient_name || "Anonymous Patient"}
+                </h2>
+              </div>
+
+              <p className="text-sm text-gray-700 mb-1">
+                <strong>Symptoms:</strong> {c.symptoms}
+              </p>
+
+              {c.image_url && (
+                <div className="mt-2">
+                  <p className="text-sm text-gray-600 mb-1 flex items-center gap-1">
+                    <Image className="w-4 h-4 text-blue-600" /> Uploaded Scan:
+                  </p>
+                  <img
+                    src={`${BACKEND_URL}/${c.image_url}`}
+                    alt="Patient Scan"
+                    className="rounded-xl border border-gray-200 max-h-64 object-contain"
+                  />
+                </div>
+              )}
+
+              {c.cnn_output && (
+                <p className="mt-3 text-sm text-gray-700">
+                  <strong>CNN Output:</strong> {c.cnn_output}
+                </p>
+              )}
+
+              {c.analysis_output && (
+                <p className="mt-3 text-sm text-gray-700">
+                  <strong>Bayesian Analysis:</strong> {c.analysis_output}
+                </p>
+              )}
+
+              {/* Optional: Button to approve or finalize diagnosis */}
+              <div className="mt-4 text-right">
+                <button className="!bg-blue-600 hover:!bg-blue-700 !text-white px-4 py-2 rounded-xl font-medium transition">
+                  Confirm Diagnosis
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
-      </div>
-    </main>
+      )}
+    </div>
   );
 }

@@ -4,17 +4,18 @@ from flask_cors import CORS
 import os, uuid
 
 app = Flask(__name__)
-CORS(app)  # Allow requests from your React frontend
+CORS(app)
 
-
-# DATABASE CONFIG
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
+# ------------------ DATABASE CONFIG ------------------
+uri = os.environ.get("DATABASE_URL")
+if uri and uri.startswith("postgres://"):
+    uri = uri.replace("postgres://", "postgresql://", 1)
+app.config['SQLALCHEMY_DATABASE_URI'] = uri
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-
-# DATABASE MODEL
+# ------------------ MODEL ------------------
 class PatientCase(db.Model):
     id = db.Column(db.String, primary_key=True, default=lambda: str(uuid.uuid4()))
     patient_name = db.Column(db.String(120))
@@ -23,12 +24,16 @@ class PatientCase(db.Model):
     cnn_output = db.Column(db.Text)
     analysis_output = db.Column(db.Text)
 
+# Ensure upload folder exists
+app.config['UPLOAD_FOLDER'] = 'static/uploads'
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-# ROUTES
+# ------------------ ROUTES ------------------
 
 @app.route('/')
 def home():
     return jsonify({"message": "Backend is running!"})
+
 
 # Patient uploads data
 @app.route('/api/patient/submit', methods=['POST'])
@@ -40,19 +45,22 @@ def patient_submit():
     if not file:
         return jsonify({"error": "No file uploaded"}), 400
 
-    os.makedirs('static/uploads', exist_ok=True)
+    # Save uploaded file
     filename = f"{uuid.uuid4()}_{file.filename}"
-    path = os.path.join('static/uploads', filename)
-    file.save(path)
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    file.save(filepath)
 
-    # === Dummy CNN output (replace later) ===
+    # Convert to public URL
+    public_url = f"{request.host_url}static/uploads/{filename}"
+
+    # === Temporary dummy model outputs (replace later with CNN/Bayesian) ===
     cnn_output = "Detected anomaly in left lung."
     analysis_output = "Possible pneumonia (80%), TB (15%), other (5%)."
 
     case = PatientCase(
         patient_name=name,
         symptoms=symptoms,
-        image_url=path,
+        image_url=public_url,
         cnn_output=cnn_output,
         analysis_output=analysis_output
     )
@@ -61,19 +69,24 @@ def patient_submit():
 
     return jsonify({"message": "Case submitted successfully!"})
 
+
 # Doctor views all patient cases
 @app.route('/api/doctor/cases', methods=['GET'])
 def doctor_cases():
     cases = PatientCase.query.all()
-    return jsonify([{
-        "id": c.id,
-        "patient_name": c.patient_name,
-        "symptoms": c.symptoms,
-        "image_url": c.image_url,
-        "cnn_output": c.cnn_output,
-        "analysis_output": c.analysis_output
-    } for c in cases])
+    return jsonify([
+        {
+            "id": c.id,
+            "patient_name": c.patient_name,
+            "symptoms": c.symptoms,
+            "image_url": c.image_url,
+            "cnn_output": c.cnn_output,
+            "analysis_output": c.analysis_output
+        } for c in cases
+    ]), 200
 
+
+# ------------------ MAIN ENTRY ------------------
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()

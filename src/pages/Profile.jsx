@@ -22,7 +22,7 @@ export default function Profile() {
           </div>
 
           <div>
-            <h2 className="text-xl font-semibold text-gray-900">Dr. XYZ</h2>
+            <h2 className="text-xl font-semibold text-gray-900">Dr. Yash</h2>
             <p className="text-gray-600">Cardiologist • New Delhi, India</p>
             <p className="text-gray-500 text-sm">Joined: Jan 2025</p>
           </div>
