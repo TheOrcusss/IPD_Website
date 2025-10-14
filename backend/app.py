@@ -50,9 +50,10 @@ def patient_submit():
     filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
     file.save(filepath)
 
-    # ✅ Always store the full public URL (for both local + Render)
-    base_url = request.host_url.rstrip("/")  # e.g., http://127.0.0.1:5000 or your Render URL
+    # Always use your Render backend domain for the image URL
+    base_url = request.host_url.rstrip("/")  # e.g., http://ipd-website-abvc.onrender.com
     public_url = f"{base_url}/static/uploads/{filename}"
+
 
     # Dummy AI results
     cnn_output = "Detected anomaly in left lung."
@@ -70,25 +71,21 @@ def patient_submit():
 
     return jsonify({"message": "Case submitted successfully!"}), 200
 
-# 👨‍⚕️ DOCTOR FETCHES CASES
+# Doctor views all patient cases
 @app.route("/api/doctor/cases", methods=["GET"])
 def doctor_cases():
     cases = PatientCase.query.all()
-    base_url = request.host_url.rstrip("/") 
 
-    data = []
-    for c in cases:
-        image_full_url = f"{base_url}/{c.image_url}" if c.image_url else None
-        data.append({
+    return jsonify([
+        {
             "id": c.id,
             "patient_name": c.patient_name,
             "symptoms": c.symptoms,
-            "image_url": image_full_url,
+            "image_url": c.image_url,  # Use full Render URL directly
             "cnn_output": c.cnn_output,
             "analysis_output": c.analysis_output,
-        })
-
-    return jsonify(data), 200
+        } for c in cases
+    ]), 200
 
 # ------------------ MAIN ENTRY ------------------
 if __name__ == "__main__":

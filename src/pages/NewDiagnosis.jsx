@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Activity, User, Image, Loader2, FileText } from "lucide-react";
+import { User, Image, Loader2, FileText } from "lucide-react";
 
 const BACKEND_URL = import.meta.env.VITE_API_URL; // From .env
 
@@ -31,7 +31,7 @@ export default function NewDiagnosis() {
   }, []);
 
   return (
-    <div className="min-w-screen mx-auto p-6">
+    <div className="max-w-6xl mx-auto p-6">
       <h1 className="flex items-center gap-3 text-3xl font-bold !text-blue-600 mb-6">
         <FileText className="w-7 h-7" />
         Patient Diagnoses
@@ -50,13 +50,13 @@ export default function NewDiagnosis() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {cases.map((c) => {
-            // 🩵 Step 1 — Log each case image URL in the console
-            console.log("Image URL:", c.image_url);
+            // 🧩 Log image URL for debugging
+            console.log("Image URL for case:", c.image_url);
 
             return (
               <div
                 key={c.id}
-                className="bg-white shadow-md rounded-2xl p-5 hover:shadow-lg transition"
+                className="bg-white shadow-md rounded-2xl p-5 hover:shadow-lg transition flex flex-col"
               >
                 <div className="flex items-center gap-2 mb-2">
                   <User className="w-5 h-5 text-blue-600" />
@@ -68,23 +68,6 @@ export default function NewDiagnosis() {
                 <p className="text-sm text-gray-700 mb-1">
                   <strong>Symptoms:</strong> {c.symptoms}
                 </p>
-
-                {c.image_url && (
-                  <div className="mt-2">
-                    <p className="text-sm text-gray-600 mb-1 flex items-center gap-1">
-                      <Image className="w-4 h-4 text-blue-600" /> Uploaded Scan:
-                    </p>
-                    <img
-                      src={
-                        c.image_url.startsWith("http")
-                          ? c.image_url
-                          : `${BACKEND_URL}/${c.image_url}`
-                      }
-                      alt="Patient Scan"
-                      className="rounded-xl border border-gray-200 max-h-64 object-contain"
-                    />
-                  </div>
-                )}
 
                 {c.cnn_output && (
                   <p className="mt-3 text-sm text-gray-700">
@@ -98,11 +81,30 @@ export default function NewDiagnosis() {
                   </p>
                 )}
 
+                {/* Confirm Button */}
                 <div className="mt-4 text-right">
                   <button className="!bg-blue-600 hover:!bg-blue-700 !text-white px-4 py-2 rounded-xl font-medium transition">
                     Confirm Diagnosis
                   </button>
                 </div>
+
+                {/* Image below button */}
+                {c.image_url && (
+                  <div className="mt-5 w-full flex flex-col items-center">
+                    <p className="text-sm text-gray-600 mb-2 flex items-center gap-1">
+                      <Image className="w-4 h-4 text-blue-600" /> Uploaded Scan:
+                    </p>
+                    <img
+                      src={c.image_url}
+                      alt="Patient Scan"
+                      className="rounded-xl border border-gray-200 object-contain shadow-sm transition-transform duration-300 hover:scale-105"
+                      onError={(e) => {
+                        e.target.src =
+                          "https://via.placeholder.com/600x400?text=Image+Unavailable";
+                      }}
+                    />
+                  </div>
+                )}
               </div>
             );
           })}
