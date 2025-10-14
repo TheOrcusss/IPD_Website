@@ -6,17 +6,15 @@ import os, uuid
 app = Flask(__name__)
 CORS(app)  # Allow requests from your React frontend
 
-# ===============================
+
 # DATABASE CONFIG
-# ===============================
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-# ===============================
+
 # DATABASE MODEL
-# ===============================
 class PatientCase(db.Model):
     id = db.Column(db.String, primary_key=True, default=lambda: str(uuid.uuid4()))
     patient_name = db.Column(db.String(120))
@@ -25,9 +23,8 @@ class PatientCase(db.Model):
     cnn_output = db.Column(db.Text)
     analysis_output = db.Column(db.Text)
 
-# ===============================
+
 # ROUTES
-# ===============================
 
 @app.route('/')
 def home():
