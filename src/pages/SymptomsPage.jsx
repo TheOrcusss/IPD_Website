@@ -14,12 +14,16 @@ export default function SymptomsPage() {
     "Shortness of breath",
   ];
 
-  const handleSubmit = (e) => {
+    const handleSubmit = (e) => {
     e.preventDefault();
     if (!symptoms.trim()) return;
-    alert(`Symptoms submitted: ${symptoms}`);
+
+    // Save to localStorage so UploadScansPage can read it
+    localStorage.setItem("symptoms", symptoms);
+    alert("✅ Symptoms saved! Now please upload your scan.");
     setSymptoms("");
   };
+
 
   const handleToggleSymptom = (symptom) => {
     const symptomList = symptoms.split(",").map((s) => s.trim()).filter(Boolean);
