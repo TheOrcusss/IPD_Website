@@ -1,14 +1,14 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from dotenv import load_dotenv
 import os, uuid
 
 # ------------------ LOAD ENV FILE ------------------
-load_dotenv()  # ✅ Reads .env file from the same folder
-print("🔍 DATABASE_URL from .env:", os.getenv("DATABASE_URL"))  # Debug check
+load_dotenv()
+print("🔍 DATABASE_URL from .env:", os.getenv("DATABASE_URL"))
 
-app = Flask(__name__, static_folder='static', static_url_path='/static')
+app = Flask(__name__, static_folder="static", static_url_path="/static")
 CORS(app)
 
 # ------------------ DATABASE CONFIG ------------------
@@ -34,15 +34,19 @@ class PatientCase(db.Model):
     analysis_output = db.Column(db.Text)
 
 # ------------------ FILE UPLOADS ------------------
-app.config["UPLOAD_FOLDER"] = "static/uploads"
+app.config["UPLOAD_FOLDER"] = os.path.join(app.root_path, "static/uploads")
 os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
-# ------------------ ROUTES ------------------
+# ------------------ STATIC FILE SERVING ------------------
+# ✅ Ensures uploaded images are served even on Render
+@app.route("/static/uploads/<path:filename>")
+def serve_uploaded_file(filename):
+    return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
 
+# ------------------ ROUTES ------------------
 @app.route("/")
 def home():
     return jsonify({"message": "✅ Backend is running!"})
-
 
 # 🧍‍♂️ Patient uploads data
 @app.route("/api/patient/submit", methods=["POST"])
@@ -54,15 +58,15 @@ def patient_submit():
     if not file:
         return jsonify({"error": "No file uploaded"}), 400
 
-    # Save file to static/uploads
+    # Save file
     filename = f"{uuid.uuid4()}_{file.filename}"
     filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
     file.save(filepath)
 
-    # Public path relative to backend
+    # ✅ Public URL (relative path)
     public_url = f"static/uploads/{filename}"
 
-    # Dummy model outputs (replace later with CNN + Bayesian results)
+    # Dummy model results
     cnn_output = "Detected anomaly in left lung."
     analysis_output = "Possible pneumonia (80%), TB (15%), other (5%)."
 
@@ -77,7 +81,6 @@ def patient_submit():
     db.session.commit()
 
     return jsonify({"message": "Case submitted successfully!"})
-
 
 # 👨‍⚕️ Doctor views all patient cases
 @app.route("/api/doctor/cases", methods=["GET"])
@@ -98,7 +101,6 @@ def doctor_cases():
         })
 
     return jsonify(data), 200
-
 
 # ------------------ MAIN ENTRY ------------------
 if __name__ == "__main__":
