@@ -20,5 +20,5 @@ A medical dashboard for doctors to manage patients, view statistics, analyze dia
 - **Frontend Framework:** [React.js](https://reactjs.org/)
 - **Routing:** [React Router](https://reactrouter.com/)
 - **State Management & Data Fetching:** [TanStack Query](https://tanstack.com/query/latest)
-- **UI Components:** [TailwindCSS](https://tailwindcss.com/), [Radix UI](https://www.radix-ui.com/), [shadcn/ui](https://ui.shadcn.com/)
+- **UI Components:** [TailwindCSS](https://tailwindcss.com/), [Radix UI](https://www.radix-ui.com/)
 - **Charts:** [Recharts](https://recharts.org/)
