@@ -32,7 +32,7 @@ export default function NewDiagnosis() {
   }, []);
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
+    <div className="min-w-screen mx-auto p-6">
       <h1 className="flex items-center gap-3 text-3xl font-bold text-blue-600 mb-6">
         <FileText className="w-7 h-7" />
         Patient Diagnoses
