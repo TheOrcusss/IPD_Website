@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import os, uuid
@@ -12,6 +12,7 @@ if uri and uri.startswith("postgres://"):
     uri = uri.replace("postgres://", "postgresql://", 1)
 app.config['SQLALCHEMY_DATABASE_URI'] = uri
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 
 db = SQLAlchemy(app)
 
@@ -74,15 +75,18 @@ def patient_submit():
 @app.route('/api/doctor/cases', methods=['GET'])
 def doctor_cases():
     cases = PatientCase.query.all()
+    base_url = request.host_url  # example: "http://127.0.0.1:5000/"
+    
     return jsonify([
         {
             "id": c.id,
             "patient_name": c.patient_name,
             "symptoms": c.symptoms,
-            "image_url": c.image_url,
+            "image_url": f"{base_url}{c.image_url}" if c.image_url else None,
             "cnn_output": c.cnn_output,
             "analysis_output": c.analysis_output
-        } for c in cases
+        }
+        for c in cases
     ]), 200
 
 
