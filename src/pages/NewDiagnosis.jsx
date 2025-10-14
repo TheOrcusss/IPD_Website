@@ -16,7 +16,7 @@ export default function NewDiagnosis() {
 
         if (response.ok) {
           setCases(data);
-          console.log("✅ Cases fetched:", data); // Debug full response
+          console.log("✅ Cases fetched:", data);
         } else {
           setError("Failed to fetch cases");
         }
@@ -81,31 +81,35 @@ export default function NewDiagnosis() {
                   </p>
                 )}
 
-                {/* Confirm Button */}
-                <div className="mt-4 text-right">
-                  <button className="!bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl font-medium transition">
-                    Confirm Diagnosis
-                  </button>
-                </div>
-
-                {/* Image below button */}
+                {/* Uploaded Scan Section */}
                 {c.image_url && (
-                  <div className="mt-5 w-full flex flex-col items-center">
+                  <div className="mt-5 w-full">
                     <p className="text-sm text-gray-600 mb-2 flex items-center gap-1">
                       <ImageIcon className="w-4 h-4 text-blue-600" /> Uploaded
                       Scan:
                     </p>
-                    <img
-                      src={c.image_url}
-                      alt="Patient Scan"
-                      onError={(e) => {
-                        console.warn("Image failed to load:", c.image_url);
-                        e.target.src =
-                          "https://via.placeholder.com/600x400?text=Image+Unavailable";
-                      }}
-                    />
+
+                    <div className="flex justify-start">
+                      <img
+                        src={c.image_url}
+                        alt="Patient Scan"
+                        className="rounded-xl border border-black-200 shadow-sm object-contain transition-transform duration-300 hover:scale-105 w-100 h-auto"
+                        onError={(e) => {
+                          console.warn("Image failed to load:", c.image_url);
+                          e.target.src =
+                            "https://via.placeholder.com/600x400?text=Image+Unavailable";
+                        }}
+                      />
+                    </div>
                   </div>
                 )}
+
+                {/* Confirm Button after Image */}
+                <div className="mt-5 text-left">
+                  <button className="!bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl font-medium transition">
+                    Confirm Diagnosis
+                  </button>
+                </div>
               </div>
             );
           })}

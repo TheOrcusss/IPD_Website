@@ -55,8 +55,8 @@ def patient_submit():
     public_url = f"{base_url}/static/uploads/{filename}"
 
     # Dummy AI results
-    cnn_output = "Detected anomaly in left lung."
-    analysis_output = "Possible pneumonia (80%), TB (15%), other (5%)."
+    cnn_output = "Detected anomaly in Brain."
+    analysis_output = "Possible Stage 2 Brain Tumor Cancer (IYKYK)."
 
     case = PatientCase(
         patient_name=name,
