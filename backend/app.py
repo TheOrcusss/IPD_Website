@@ -8,7 +8,7 @@ import os, uuid
 load_dotenv()  # ✅ Reads .env file from the same folder
 print("🔍 DATABASE_URL from .env:", os.getenv("DATABASE_URL"))  # Debug check
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', static_url_path='/static')
 CORS(app)
 
 # ------------------ DATABASE CONFIG ------------------
