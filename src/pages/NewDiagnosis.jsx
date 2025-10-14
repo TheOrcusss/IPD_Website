@@ -51,7 +51,7 @@ export default function NewDiagnosis() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {cases.map((c) => {
-            console.log("🖼️ Image URL from DB:", c.image_url);
+            console.log("Image URL from DB:", c.image_url);
 
             return (
               <div
@@ -98,9 +98,8 @@ export default function NewDiagnosis() {
                     <img
                       src={c.image_url}
                       alt="Patient Scan"
-                      className="rounded-xl border border-gray-200 max-h-64 object-contain shadow-sm transition-transform duration-300 hover:scale-105"
                       onError={(e) => {
-                        console.warn("⚠️ Image failed to load:", c.image_url);
+                        console.warn("Image failed to load:", c.image_url);
                         e.target.src =
                           "https://via.placeholder.com/600x400?text=Image+Unavailable";
                       }}
