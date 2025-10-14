@@ -56,7 +56,7 @@ def patient_submit():
 
     # Dummy AI results
     cnn_output = "Detected anomaly in Brain."
-    analysis_output = "Possible Stage 2 Brain Tumor Cancer (IYKYK)."
+    analysis_output = "Possible Stage 2 Brain Tumor Cancer."
 
     case = PatientCase(
         patient_name=name,
