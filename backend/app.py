@@ -10,7 +10,7 @@ CORS(app)
 # ------------------ DATABASE CONFIG ------------------
 # Directly connect to your Render PostgreSQL
 app.config["SQLALCHEMY_DATABASE_URI"] = (
-    "postgresql://ipd_database_user:DocDwPs7OonqP47NEo6tjlyoy9Du5jzX@dpg-d3n4md33fgac73ab8830-a.oregon-postgres.render.com/ipd_database"
+    "postgresql://diagnomed_ai_user:MHMkBNrYX8QhunAGnuoJEhTtSbYvQmRN@dpg-d3n82oemcj7s7385mlbg-a.oregon-postgres.render.com/diagnomed_ai"
 )
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
@@ -54,7 +54,6 @@ def patient_submit():
     base_url = request.host_url.rstrip("/")  # e.g., http://ipd-website-abvc.onrender.com
     public_url = f"{base_url}/static/uploads/{filename}"
 
-
     # Dummy AI results
     cnn_output = "Detected anomaly in left lung."
     analysis_output = "Possible pneumonia (80%), TB (15%), other (5%)."
@@ -71,17 +70,22 @@ def patient_submit():
 
     return jsonify({"message": "Case submitted successfully!"}), 200
 
-# Doctor views all patient cases
+# 👨‍⚕️ DOCTOR FETCHES CASES
 @app.route("/api/doctor/cases", methods=["GET"])
 def doctor_cases():
     cases = PatientCase.query.all()
+
+    # 🧩 Console log for debugging
+    print("\n🧠 Fetching cases from database:")
+    for c in cases:
+        print(f"   🖼️ Image URL from DB: {c.image_url}")
 
     return jsonify([
         {
             "id": c.id,
             "patient_name": c.patient_name,
             "symptoms": c.symptoms,
-            "image_url": c.image_url,  # Use full Render URL directly
+            "image_url": c.image_url,  # ✅ use URL directly from DB
             "cnn_output": c.cnn_output,
             "analysis_output": c.analysis_output,
         } for c in cases
