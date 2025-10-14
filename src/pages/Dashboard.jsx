@@ -16,7 +16,7 @@ export default function Dashboard() {
             Welcome Back, Dr. XYZ
           </h2>
           <p className="mt-1 text-gray-600">
-            Here’s what’s happening with your patients today.
+            Here's what's happening with your patients today.
           </p>
           <ul className="mt-2 list-disc list-inside text-gray-700 text-sm">
             <li>5 patients visiting for a new checkup</li>
