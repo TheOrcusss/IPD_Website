@@ -8,12 +8,16 @@ app = Flask(__name__, static_folder="static", static_url_path="/static")
 CORS(app)
 
 # ------------------ DATABASE CONFIG ------------------
-# Directly connect to your Render PostgreSQL
-app.config["SQLALCHEMY_DATABASE_URI"] = (
-    "postgresql://diagnomed_ai_user:MHMkBNrYX8QhunAGnuoJEhTtSbYvQmRN@dpg-d3n82oemcj7s7385mlbg-a.oregon-postgres.render.com/diagnomed_ai"
-)
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+# Use environment variable instead of hardcoded credentials
+uri = os.getenv("DATABASE_URL")
+if uri and uri.startswith("postgres://"):
+    uri = uri.replace("postgres://", "postgresql://", 1)
 
+if not uri:
+    raise RuntimeError("❌ DATABASE_URL not set! Please check your Render environment.")
+
+app.config["SQLALCHEMY_DATABASE_URI"] = uri
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
 # ------------------ MODEL ------------------
