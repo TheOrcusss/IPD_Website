@@ -51,7 +51,9 @@ export default function PatientProfile() {
               <span className="font-medium">Allergies:</span> None
             </p>
             <p>
-              <span className="font-medium">Chronic Conditions:</span> Hypertension
+              <span className="font-medium">Chronic Conditions:</span>
+              {"Hypertension, Diabetes"}
+              Hypertension
             </p>
           </div>
         </div>
